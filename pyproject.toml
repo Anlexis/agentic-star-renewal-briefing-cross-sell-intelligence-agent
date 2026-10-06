@@ -1,0 +1,51 @@
+[project]
+name = "ins-c2-018"
+version = "0.1.0"
+description = "RenewalBriefingCrossSellAgent — AgentCore Template"
+requires-python = ">=3.11"
+# The framework (agenticstar-agentcore) is not resolvable from the default
+# public index — it is installed from the platform package registry. Pinning it
+# here would make `pip install -e .` fail.
+dependencies = [
+    "agenticstar-agentcore[marketplace,openai]==1.0.3",]
+
+[project.optional-dependencies]
+dev = [
+    "pytest==8.1.1",
+    "pytest-cov==5.0.0",
+    "pytest-asyncio==0.23.6",
+    "ruff==0.4.4",
+    "mypy==1.10.0",
+    "types-PyYAML==6.0.12.20260815",
+]
+
+[build-system]
+requires = ["setuptools==68.2.2"]
+build-backend = "setuptools.build_meta"
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+# The sample walkthroughs under src/examples/ are reference material shipped
+# for readers, not part of the agent; they are type-checked as prose, not code.
+exclude = ["src/examples/"]
+# Compatibility exception for the published agenticstar-agentcore wheel: it
+# ships no py.typed marker, so framework.* / shared.* imports resolve to Any,
+# which turns every required framework subclass into a "subclass of Any" error.
+# Every other strict setting stays on.
+disallow_subclassing_any = false
+
+[[tool.mypy.overrides]]
+module = ["framework.*", "shared.*"]
+ignore_missing_imports = true
+
+# State extends the framework's AgentState TypedDict with NotRequired fields —
+# correct at runtime, but with the untyped wheel mypy cannot see the TypedDict
+# base and mis-flags every field. Silence only that diagnostic, only here.
+[[tool.mypy.overrides]]
+module = ["src.schemas.state"]
+disable_error_code = ["valid-type"]

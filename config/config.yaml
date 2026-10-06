@@ -1,0 +1,36 @@
+# Runtime parameters — loaded by the platform registry and passed to the graph
+# as Graph(config=...). Separate from config/agent.yaml, which is the static
+# registration manifest and carries no tuning values.
+#
+# Everything below is read through src/services/renewal_policy.py, which bounds
+# every value. A figure outside its documented range is not applied: the
+# template default for that key is kept and the briefing says so, rather than
+# grading renewals against a number nobody intended.
+
+max_retry: 3
+timeout_s: 30
+
+# Renewal-risk policy — an agency-configured commercial input, not a statutory
+# requirement. Version it here so a briefing can state which rule produced its
+# verdict.
+renewal_risk_policy:
+  policy_name: "Renewal Risk & Cross-Sell Policy"
+  policy_version: "1.0.0"
+  effective_date: "2026-07-02"
+  # An account inside this many days of renewal is in the renewal window.
+  lapse_days_threshold: 30          # days, 0 .. 3,650
+  # A premium movement at or above this percentage is a retention risk factor.
+  premium_increase_pct_threshold: 10.0   # percent, 0 .. 1,000
+  # Claims at or above this count in the current term are a risk factor.
+  claims_count_threshold: 2         # claims, 0 .. 1,000
+
+# Cross-sell catalog — the cover categories the briefing can recommend, with
+# the indicative annual premium used to size the opportunity. Indicative
+# planning figures for the conversation, never quotes. Category keys must be
+# lowercase identifiers starting with a letter.
+cross_sell_catalog:
+  life: 84000       # JPY per year, 0 .. 100,000,000
+  medical: 48000
+  accident: 24000
+  fire: 36000
+  auto: 72000
